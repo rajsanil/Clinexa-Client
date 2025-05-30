@@ -4,6 +4,7 @@ import {
   GridItemChangeEvent,
 } from "@progress/kendo-react-grid";
 import { useState } from "react";
+import { ProductIDSearchEditCell } from "./ProductCell";
 
 const Test = () => {
   const products = [
@@ -1380,9 +1381,12 @@ const Test = () => {
         <Column
           field="ProductID"
           title="ID"
-          editable={false}
-          filterable={false}
-          width="75px"
+          width="140px"
+          cells={{
+            edit: {
+              text: ProductIDSearchEditCell,
+            },
+          }}
         />
         <Column field="ProductName" title="Name" editor="text" />
         <Column
@@ -1390,7 +1394,7 @@ const Test = () => {
           title="Category"
           editable={false}
           width="200px"
-        ></Column>
+        />
         <Column
           field="UnitPrice"
           title="Price"
