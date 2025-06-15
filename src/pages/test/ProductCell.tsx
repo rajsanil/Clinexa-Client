@@ -57,17 +57,19 @@ export const ProductIDSearchEditCell = (
 ) => {
   const { dataItem, field, onChange, onOpenDialog } = props;
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isDialogOpen) {
       const value = field && dataItem[field] ? dataItem[field] : "";
       inputRef.current.value = value.toString();
-      inputRef.current.focus();
+      if (!isDialogOpen) {
+        inputRef.current.focus();
+      }
     }
-  }, []);
+  }, [isDialogOpen]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  };
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {};
 
   const handleInputBlur = () => {
     if (onChange && inputRef.current) {
@@ -93,8 +95,18 @@ export const ProductIDSearchEditCell = (
   const openDialog = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDialogOpen(true);
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
     if (onOpenDialog) {
       onOpenDialog(dataItem);
+    }
+  };
+
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (isDialogOpen) {
+      e.target.blur();
     }
   };
 
@@ -114,6 +126,7 @@ export const ProductIDSearchEditCell = (
           type="text"
           onChange={handleInputChange}
           onBlur={handleInputBlur}
+          onFocus={handleInputFocus}
           style={{
             flex: 1,
             minWidth: 0,

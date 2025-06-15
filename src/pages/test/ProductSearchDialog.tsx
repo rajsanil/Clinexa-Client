@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Dialog, DialogActionsBar } from "@progress/kendo-react-dialogs";
 import { Grid, GridColumn as Column } from "@progress/kendo-react-grid";
 import { Button } from "@progress/kendo-react-buttons";
@@ -33,33 +33,64 @@ export const ProductSearchDialog: React.FC<ProductSearchDialogProps> = ({
   onClose,
   onProductSelect,
 }) => {
+  const gridRef = useRef<any>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+ 
+        const filterInput = dialogRef.current?.querySelector(
+          '.k-filtercell input, .k-filter-row input, input[data-role="numerictextbox"], .k-textbox, .k-grid-filter-row input'
+        );
+        if (filterInput instanceof HTMLInputElement) {
+          filterInput.focus();
+          filterInput.select();
+        }
+      }, 300); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
+
+  const handleClose = () => {
+    
+    const activeElement = document.activeElement as HTMLElement;
+    if (activeElement) {
+      activeElement.blur();
+    }
+    onClose();
+  };
+
   if (!isVisible) return null;
 
   return (
-    <Dialog title="Select Product" onClose={onClose} width={600} height={400}>
-      <div style={{ padding: "10px" }}>
+    <Dialog title="Select Product" onClose={handleClose} width={800}>
+      <div ref={dialogRef} style={{ padding: "10px" }}>
         <Grid
+          ref={gridRef}
           data={products}
-          style={{ height: "300px" }}
+          style={{ height: "400px" }}
           dataItemKey="ProductID"
           sortable={true}
           filterable={true}
           pageable={true}
-          defaultTake={5}
+          defaultTake={10}
           onRowClick={(e) => onProductSelect(e.dataItem)}
         >
-          <Column field="ProductID" title="ID" width="80px" />
-          <Column field="ProductName" title="Product Name" width="250px" />
+          <Column field="ProductID" title="ID" width="180px" filter="numeric" />
+          <Column field="ProductName" title="Product Name" filter="text" />
           <Column
             field="UnitPrice"
             title="Price"
-            width="100px"
             format="{0:c}"
+            width="180px"
+            filter="numeric"
           />
         </Grid>
       </div>
       <DialogActionsBar>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
       </DialogActionsBar>
     </Dialog>
   );
