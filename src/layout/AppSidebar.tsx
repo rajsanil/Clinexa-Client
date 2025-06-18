@@ -1,19 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-
 import {
-  BoxCubeIcon,
-  CalenderIcon,
-  ChevronDownIcon,
-  GridIcon,
-  HorizontaLDots,
-  ListIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  UserCircleIcon,
-} from "../icons";
+  Dashboard,
+  AdminPanelSettings,
+  ExpandMore,
+  MoreHoriz,
+} from "@mui/icons-material";
 import { useSidebar } from "../context/SidebarContext";
 
 type NavItem = {
@@ -25,15 +17,10 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Overview", path: "/", pro: false }],
-  },
-  {
     name: "Administrative",
-    icon: <UserCircleIcon />,
+    icon: <AdminPanelSettings />,
     subItems: [
-      { name: "Users", path: "/users", pro: false },
+      { name: "Users", path: "/", pro: false },
       { name: "Roles", path: "/roles", pro: false },
     ],
   },
@@ -141,7 +128,7 @@ const AppSidebar: React.FC = () => {
                 <span className="menu-item-text">{nav.name}</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
+                <ExpandMore
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${
                     openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
@@ -296,7 +283,7 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   "Menu"
                 ) : (
-                  <HorizontaLDots className="size-6" />
+                  <MoreHoriz className="size-6" />
                 )}
               </h2>
               {renderMenuItems(navItems, "main")}
@@ -313,7 +300,7 @@ const AppSidebar: React.FC = () => {
                   {isExpanded || isHovered || isMobileOpen ? (
                     "Others"
                   ) : (
-                    <HorizontaLDots />
+                    <MoreHoriz />
                   )}
                 </h2>
                 {renderMenuItems(othersItems, "others")}

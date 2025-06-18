@@ -22,6 +22,9 @@ import Test from "./pages/test";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import { AuthProvider } from "./context/AuthContext";
+import Users from "./pages/Users";
+import UserDetail from "./pages/Users/UserDetail";
+import Roles from "./pages/Roles";
 
 export default function App() {
   return (
@@ -38,8 +41,11 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Home />} />
+            <Route index element={<Users />} />
+            <Route path="users/:id" element={<UserDetail />} />
             <Route path="test" element={<Test />} />
+
+            <Route path="roles" element={<Roles />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />

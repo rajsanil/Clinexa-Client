@@ -7,4 +7,9 @@ export const API_SETTINGS = {
   FORGOT_PASSWORD: `${API_URL}/forgot-password`,
   RESET_PASSWORD: `${API_URL}/reset-password`,
   REFRESH_TOKEN: `${API_URL}/refresh`,
+
+  GET_USERS: `${API_URL}/users`,
+  GET_USER_BY_ID: `${API_URL}/users/`,
+
+  GET_ROLES: `${API_URL}/roles`,
 };

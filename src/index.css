@@ -776,3 +776,8 @@ span.flatpickr-weekday,
 .simplebar-scrollbar.simplebar-visible:before {
   @apply opacity-100;
 }
+
+.users-table-container .k-grid table,
+.roles-table-container .k-grid table {
+  width: 100% !important;
+}

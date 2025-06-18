@@ -6,33 +6,7 @@ import React, {
   ReactNode,
 } from "react";
 import { API_SETTINGS } from "../utils/settings";
-
-interface User {
-  username: string;
-  role?: string;
-  isLockedOut: boolean;
-  isNotAllowed: boolean;
-  requiresTwoFactor: boolean;
-}
-
-interface AuthResponse {
-  result: boolean;
-  token: string;
-  username: string;
-  isLockedOut: boolean;
-  isNotAllowed: boolean;
-  requiresTwoFactor: boolean;
-  error: string[];
-}
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: User | null;
-  token: string | null;
-  login: (username: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  loading: boolean;
-}
+import { AuthContextType, AuthResponse, AuthUser } from "../types/auth.types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -68,7 +42,7 @@ const decodeJWT = (token: string): any => {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -140,8 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const decodedToken = decodeJWT(data.token);
         const userRole = decodedToken?.role || "User";
 
-        const userData: User = {
-          username: data.username,
+        const userData: AuthUser = {
+          userName: data.username,
           role: userRole,
           isLockedOut: data.isLockedOut,
           isNotAllowed: data.isNotAllowed,
