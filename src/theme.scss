@@ -1,0 +1,38 @@
+@use "sass:map";
+@use "@progress/kendo-theme-default/scss/index.scss" as *;
+
+// Define your custom colors
+$my-primary: #465fff;
+$my-secondary: #fb6514;
+$my-success: #12b76a;
+$my-error: #f04438;
+$my-warning: #f79009;
+
+// Generate all color variations for your custom colors
+$kendo-colors: map.merge(
+  $kendo-colors,
+  k-generate-color-variations("primary", $my-primary, "default")
+);
+$kendo-colors: map.merge(
+  $kendo-colors,
+  k-generate-color-variations("secondary", $my-secondary, "default")
+);
+$kendo-colors: map.merge(
+  $kendo-colors,
+  k-generate-color-variations("success", $my-success, "default")
+);
+$kendo-colors: map.merge(
+  $kendo-colors,
+  k-generate-color-variations("error", $my-error, "default")
+);
+$kendo-colors: map.merge(
+  $kendo-colors,
+  k-generate-color-variations("warning", $my-warning, "default")
+);
+
+// Customize other theme variables if needed
+$kendo-border-radius-md: 0.5rem;
+$kendo-font-size: 14px;
+
+// Include all Kendo styles with your customizations
+@include kendo-theme--styles();

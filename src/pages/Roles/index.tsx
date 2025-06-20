@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { GridCellProps } from "@progress/kendo-react-grid";
+import { Dialog, DialogActionsBar } from "@progress/kendo-react-dialogs";
+import { Button } from "@progress/kendo-react-buttons";
+import { Input } from "@progress/kendo-react-inputs";
+import {
+  Notification,
+  NotificationGroup,
+} from "@progress/kendo-react-notification";
 import PageMeta from "../../components/common/PageMeta";
 import { API_SETTINGS } from "../../utils/settings";
 import { apiService } from "../../utils/apiRequest";
 import {
   AdminPanelSettings,
   Visibility,
-  Refresh,
+  Add,
   Security,
 } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
@@ -18,6 +25,11 @@ const Roles: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [roleName, setRoleName] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +58,63 @@ const Roles: React.FC = () => {
     }
   };
 
+  const handleCreateRole = async () => {
+    if (!roleName.trim()) {
+      setCreateError("Role name is required");
+      return;
+    }
+
+    try {
+      setCreateLoading(true);
+      setCreateError(null);
+
+      const response = await apiService.post(API_SETTINGS.CREATE_ROLE, {
+        name: roleName.trim(),
+      });
+
+      if (response.success) {
+        // Reset form
+        setRoleName("");
+        setShowCreateDialog(false);
+
+        // Refresh the roles list
+        await fetchRoles();
+
+        // Show success notification
+        addNotification({
+          type: "success",
+          title: "Success",
+          content: "Role created successfully",
+        });
+      } else {
+        setCreateError(response.error?.join(", ") || "Failed to create role");
+      }
+    } catch (err) {
+      setCreateError("Failed to create role. Please try again.");
+      console.error("Error creating role:", err);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setRoleName("");
+    setCreateError(null);
+    setShowCreateDialog(false);
+  };
+
+  const addNotification = (notification: any) => {
+    const newNotification = {
+      ...notification,
+      id: Math.random(),
+    };
+    setNotifications((prev) => [...prev, newNotification]);
+  };
+
+  const removeNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
   // Custom cell renderers
   const RoleNameCell = (props: GridCellProps) => {
     const { dataItem } = props;
@@ -53,11 +122,6 @@ const Roles: React.FC = () => {
     return (
       <td className={`${props.className || ""} p-3`}>
         <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-sm">
-              <Security className="w-5 h-5 text-white" />
-            </div>
-          </div>
           <div className="ml-3 min-w-0 flex-1">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
               {dataItem.name}
@@ -81,14 +145,15 @@ const Roles: React.FC = () => {
     return (
       <td className={`${props.className || ""} p-3 w-full`}>
         <div className="flex items-center justify-center w-full">
-          <button
-            className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+          <Button
+            size="small"
+            fillMode="flat"
             onClick={handleViewRole}
             title="View role details"
           >
             <Visibility className="w-3 h-3 mr-1" />
             View
-          </button>
+          </Button>
         </div>
       </td>
     );
@@ -119,12 +184,9 @@ const Roles: React.FC = () => {
           <div className="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
-          <button
-            onClick={fetchRoles}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
-          >
+          <Button themeColor="primary" onClick={fetchRoles}>
             Try Again
-          </button>
+          </Button>
         </div>
       </>
     );
@@ -148,32 +210,10 @@ const Roles: React.FC = () => {
             </p>
           </div>
           <div className="mt-4 sm:mt-0">
-            <button
-              onClick={fetchRoles}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <Refresh className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
-          </div>
-        </div>
-
-        {/* Roles Count */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-lg dark:bg-purple-900/20">
-                <AdminPanelSettings className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Total Roles
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {roles.length}
-              </div>
-            </div>
+            <Button themeColor="primary" onClick={() => setShowCreateDialog(true)}>
+              <Add className="w-4 h-4 mr-2" />
+              Create Role
+            </Button>
           </div>
         </div>
 
@@ -188,6 +228,12 @@ const Roles: React.FC = () => {
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 There are no roles to display at the moment.
               </p>
+              <div className="mt-4">
+                <Button onClick={() => setShowCreateDialog(true)}>
+                  <Add className="w-4 h-4 mr-2" />
+                  Create Your First Role
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="w-full roles-table-container">
@@ -258,6 +304,80 @@ const Roles: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Create Role Dialog */}
+      {showCreateDialog && (
+        <Dialog
+          title="Create New Role"
+          onClose={handleDialogClose}
+          width={400}
+          height={280}
+        >
+          <div className="p-4">
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+              Enter a name for the new role
+            </p>
+
+            {createError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {createError}
+                </p>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Role Name
+              </label>
+              <Input
+                value={roleName}
+                onChange={(e) => setRoleName(e.value ?? "")}
+                placeholder="Enter role name (e.g., Receptionist)"
+                disabled={createLoading}
+                style={{ width: "100%" }}
+              />
+            </div>
+          </div>
+
+          <DialogActionsBar>
+            <Button onClick={handleDialogClose} disabled={createLoading}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateRole}
+              disabled={createLoading || !roleName.trim()}
+            >
+              {createLoading ? "Creating..." : "Create Role"}
+            </Button>
+          </DialogActionsBar>
+        </Dialog>
+      )}
+
+      {/* Notifications */}
+      <NotificationGroup
+        style={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          zIndex: 9999,
+        }}
+      >
+        {notifications.map((notification) => (
+          <Notification
+            key={notification.id}
+            type={notification.type}
+            closable={true}
+            onClose={() => removeNotification(notification.id)}
+            style={{ marginBottom: "10px" }}
+          >
+            <div>
+              <div className="font-medium">{notification.title}</div>
+              <div className="text-sm">{notification.content}</div>
+            </div>
+          </Notification>
+        ))}
+      </NotificationGroup>
     </>
   );
 };

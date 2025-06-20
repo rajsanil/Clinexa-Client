@@ -1,12 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./theme.scss";
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
-import '@progress/kendo-theme-default/dist/all.css';
+import "@progress/kendo-theme-default/dist/all.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,5 +16,5 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </AppWrapper>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 );

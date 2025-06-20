@@ -5,6 +5,96 @@ layer(base);
 
 @custom-variant dark (&:is(.dark *));
 
+:root {
+  --site-primary: #465fff;
+  --site-primary-hover: #3641f5;
+  --site-primary-active: #2a31d8;
+  --site-primary-light: #7592ff;
+
+  --site-secondary: #fb6514;
+  --site-secondary-hover: #ec4a0a;
+  --site-secondary-active: #c4320a;
+  --site-secondary-light: #fd853a;
+  
+  --kendo-color-primary: var(--site-primary) !important;
+  --kendo-color-primary-hover: var(--site-primary-hover) !important;
+  --kendo-color-primary-active: var(--site-primary-active) !important;
+  --kendo-color-primary-emphasis: var(--site-primary-light) !important;
+  --kendo-color-primary-subtle: color-mix(
+    in srgb,
+    var(--site-primary) 8%,
+    white
+  ) !important;
+  --kendo-color-primary-subtle-hover: color-mix(
+    in srgb,
+    var(--site-primary) 12%,
+    white
+  ) !important;
+  --kendo-color-primary-subtle-active: color-mix(
+    in srgb,
+    var(--site-primary) 16%,
+    white
+  ) !important;
+  --kendo-color-primary-on-subtle: color-mix(
+    in srgb,
+    var(--site-primary) 80%,
+    black
+  ) !important;
+  --kendo-color-on-primary: #ffffff !important;
+  --kendo-color-primary-on-surface: var(--site-primary) !important;
+
+  --kendo-color-secondary: var(--site-secondary) !important;
+  --kendo-color-secondary-hover: var(--site-secondary-hover) !important;
+  --kendo-color-secondary-active: var(--site-secondary-active) !important;
+  --kendo-color-secondary-emphasis: var(--site-secondary-light) !important;
+  --kendo-color-secondary-subtle: color-mix(
+    in srgb,
+    var(--site-secondary) 8%,
+    white
+  ) !important;
+  --kendo-color-secondary-subtle-hover: color-mix(
+    in srgb,
+    var(--site-secondary) 12%,
+    white
+  ) !important;
+  --kendo-color-secondary-subtle-active: color-mix(
+    in srgb,
+    var(--site-secondary) 16%,
+    white
+  ) !important;
+  --kendo-color-secondary-on-subtle: color-mix(
+    in srgb,
+    var(--site-secondary) 80%,
+    black
+  ) !important;
+  --kendo-color-on-secondary: #ffffff !important;
+  --kendo-color-secondary-on-surface: var(--site-secondary) !important;
+
+  /* Override base colors to use primary */
+  --kendo-color-base: var(--site-primary) !important;
+  --kendo-color-base-hover: var(--site-primary-hover) !important;
+  --kendo-color-base-active: var(--site-primary-active) !important;
+  --kendo-color-on-base: #ffffff !important;
+
+  --kendo-border-radius-md: 0.5rem;
+  --kendo-font-size: 14px;
+
+  --kendo-color-success: #12b76a;
+  --kendo-color-error: #f04438;
+  --kendo-color-warning: #f79009;
+  --kendo-color-info: #0ba5ec;
+}
+
+.dark {
+  --kendo-color-primary: var(--site-primary-light) !important;
+  --kendo-color-primary-hover: var(--site-primary) !important;
+  --kendo-color-primary-active: var(--site-primary-hover) !important;
+
+  --kendo-color-secondary: var(--site-secondary-light) !important;
+  --kendo-color-secondary-hover: var(--site-secondary) !important;
+  --kendo-color-secondary-active: var(--site-secondary-hover) !important;
+}
+
 @theme {
   --font-*: initial;
   --font-outfit: Outfit, sans-serif;
@@ -36,36 +126,33 @@ layer(base);
   --text-theme-xs: 12px;
   --text-theme-xs--line-height: 18px;
 
+  --color-primary: var(--site-primary);
+  --color-primary-hover: var(--site-primary-hover);
+  --color-primary-active: var(--site-primary-active);
+  --color-primary-light: var(--site-primary-light);
+
+  --color-secondary: var(--site-secondary);
+  --color-secondary-hover: var(--site-secondary-hover);
+  --color-secondary-active: var(--site-secondary-active);
+  --color-secondary-light: var(--site-secondary-light);
+
+  --color-brand-25: color-mix(in srgb, var(--site-primary) 5%, white);
+  --color-brand-50: color-mix(in srgb, var(--site-primary) 10%, white);
+  --color-brand-100: color-mix(in srgb, var(--site-primary) 20%, white);
+  --color-brand-200: color-mix(in srgb, var(--site-primary) 30%, white);
+  --color-brand-300: color-mix(in srgb, var(--site-primary) 50%, white);
+  --color-brand-400: color-mix(in srgb, var(--site-primary) 70%, white);
+  --color-brand-500: var(--site-primary);
+  --color-brand-600: var(--site-primary-hover);
+  --color-brand-700: var(--site-primary-active);
+  --color-brand-800: color-mix(in srgb, var(--site-primary-active) 60%, black);
+  --color-brand-900: color-mix(in srgb, var(--site-primary-active) 40%, black);
+  --color-brand-950: color-mix(in srgb, var(--site-primary-active) 20%, black);
+
   --color-current: currentColor;
   --color-transparent: transparent;
   --color-white: #ffffff;
   --color-black: #101828;
-
-  --color-brand-25: #f2f7ff;
-  --color-brand-50: #ecf3ff;
-  --color-brand-100: #dde9ff;
-  --color-brand-200: #c2d6ff;
-  --color-brand-300: #9cb9ff;
-  --color-brand-400: #7592ff;
-  --color-brand-500: #465fff;
-  --color-brand-600: #3641f5;
-  --color-brand-700: #2a31d8;
-  --color-brand-800: #252dae;
-  --color-brand-900: #262e89;
-  --color-brand-950: #161950;
-
-  --color-blue-light-25: #f5fbff;
-  --color-blue-light-50: #f0f9ff;
-  --color-blue-light-100: #e0f2fe;
-  --color-blue-light-200: #b9e6fe;
-  --color-blue-light-300: #7cd4fd;
-  --color-blue-light-400: #36bffa;
-  --color-blue-light-500: #0ba5ec;
-  --color-blue-light-600: #0086c9;
-  --color-blue-light-700: #026aa2;
-  --color-blue-light-800: #065986;
-  --color-blue-light-900: #0b4a6f;
-  --color-blue-light-950: #062c41;
 
   --color-gray-25: #fcfcfd;
   --color-gray-50: #f9fafb;
@@ -80,19 +167,6 @@ layer(base);
   --color-gray-900: #101828;
   --color-gray-950: #0c111d;
   --color-gray-dark: #1a2231;
-
-  --color-orange-25: #fffaf5;
-  --color-orange-50: #fff6ed;
-  --color-orange-100: #ffead5;
-  --color-orange-200: #fddcab;
-  --color-orange-300: #feb273;
-  --color-orange-400: #fd853a;
-  --color-orange-500: #fb6514;
-  --color-orange-600: #ec4a0a;
-  --color-orange-700: #c4320a;
-  --color-orange-800: #9c2a10;
-  --color-orange-900: #7e2410;
-  --color-orange-950: #511c10;
 
   --color-success-25: #f6fef9;
   --color-success-50: #ecfdf3;
@@ -134,7 +208,6 @@ layer(base);
   --color-warning-950: #4e1d09;
 
   --color-theme-pink-500: #ee46bc;
-
   --color-theme-purple-500: #7a5af8;
 
   --shadow-theme-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1),
@@ -165,14 +238,6 @@ layer(base);
   --z-index-999999: 999999;
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -276,12 +341,12 @@ layer(base);
     @apply bg-gray-200 rounded-full dark:bg-gray-700;
   }
 }
+
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #344054;
 }
 
 @layer utilities {
-  /* For Remove Date Icon */
   input[type="date"]::-webkit-inner-spin-button,
   input[type="time"]::-webkit-inner-spin-button,
   input[type="date"]::-webkit-calendar-picker-indicator,
@@ -291,6 +356,30 @@ layer(base);
   }
 }
 
+.k-button.k-button-solid-primary,
+.k-button.k-button-solid-base {
+  background-color: var(--site-primary) !important;
+  border-color: var(--site-primary) !important;
+  color: #ffffff !important;
+}
+
+.k-button.k-button-solid-primary:hover,
+.k-button.k-button-solid-base:hover {
+  background-color: var(--site-primary-hover) !important;
+  border-color: var(--site-primary-hover) !important;
+}
+
+.k-button.k-button-solid-secondary {
+  background-color: var(--site-secondary) !important;
+  border-color: var(--site-secondary) !important;
+  color: #ffffff !important;
+}
+
+.k-button.k-button-solid-secondary:hover {
+  background-color: var(--site-secondary-hover) !important;
+  border-color: var(--site-secondary-hover) !important;
+}
+
 .tableCheckbox:checked ~ span span {
   @apply opacity-100;
 }
@@ -298,7 +387,6 @@ layer(base);
   @apply border-brand-500 bg-brand-500;
 }
 
-/* third-party libraries CSS */
 .apexcharts-legend-text {
   @apply !text-gray-700 dark:!text-gray-400;
 }

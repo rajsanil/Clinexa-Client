@@ -12,4 +12,5 @@ export const API_SETTINGS = {
   GET_USER_BY_ID: `${API_URL}/users/`,
 
   GET_ROLES: `${API_URL}/roles`,
+  CREATE_ROLE: `${API_URL}/roles`,
 };
