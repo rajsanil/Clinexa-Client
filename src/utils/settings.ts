@@ -13,4 +13,6 @@ export const API_SETTINGS = {
 
   GET_ROLES: `${API_URL}/roles`,
   CREATE_ROLE: `${API_URL}/roles`,
+  UPDATE_ROLE: `${API_URL}/roles/`,
+  DELETE_ROLE: `${API_URL}/roles/`,
 };

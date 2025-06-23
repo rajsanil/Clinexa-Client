@@ -25,6 +25,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Users from "./pages/Users";
 import UserDetail from "./pages/Users/UserDetail";
 import Roles from "./pages/Roles";
+import RoleDetail from "./pages/Roles/RoleDetail";
 
 export default function App() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="test" element={<Test />} />
 
             <Route path="roles" element={<Roles />} />
+            <Route path="roles/:id" element={<RoleDetail />} />
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
