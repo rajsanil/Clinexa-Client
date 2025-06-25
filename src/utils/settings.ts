@@ -15,4 +15,7 @@ export const API_SETTINGS = {
   CREATE_ROLE: `${API_URL}/roles`,
   UPDATE_ROLE: `${API_URL}/roles/`,
   DELETE_ROLE: `${API_URL}/roles/`,
+
+  GET_ALL_PERMISSIONS: `${API_URL}/permissions/all`,
+  ASSIGN_ROLE_PERMISSIONS: `${API_URL}/roles/assign-permissions`,
 };

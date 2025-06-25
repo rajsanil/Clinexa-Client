@@ -4,7 +4,6 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/CleanClient/",
   plugins: [
     react(),
     svgr({
