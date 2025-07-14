@@ -35,9 +35,6 @@ const RoleDetail: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "permissions">(
-    "details"
-  );
   const [editForm, setEditForm] = useState({
     name: "",
   });
@@ -55,7 +52,6 @@ const RoleDetail: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Note: You'll need to create this endpoint in your API
       const response = await apiService.get<{ role: Role }>(
         `${API_SETTINGS.GET_ROLES}/${id}`
       );
@@ -101,13 +97,11 @@ const RoleDetail: React.FC = () => {
       setSaving(true);
       setEditError(null);
 
-      // Note: You'll need to create this endpoint in your API
       const response = await apiService.put(`${API_SETTINGS.GET_ROLES}/${id}`, {
         name: editForm.name.trim(),
       });
 
       if (response.success) {
-        // Update local role state
         if (role) {
           setRole({
             ...role,
@@ -117,7 +111,6 @@ const RoleDetail: React.FC = () => {
         }
         setIsEditing(false);
 
-        // Show success notification
         addNotification({
           type: "success",
           title: "Success",
@@ -138,20 +131,17 @@ const RoleDetail: React.FC = () => {
     try {
       setDeleting(true);
 
-      // Note: You'll need to create this endpoint in your API
       const response = await apiService.delete(
         `${API_SETTINGS.GET_ROLES}/${id}`
       );
 
       if (response.success) {
-        // Show success notification
         addNotification({
           type: "success",
           title: "Success",
           content: "Role deleted successfully",
         });
 
-        // Navigate back to roles list after a short delay
         setTimeout(() => {
           navigate("/roles", { replace: true });
         }, 1500);
@@ -186,7 +176,6 @@ const RoleDetail: React.FC = () => {
   };
 
   const handlePermissionsUpdated = () => {
-    // Refresh role data or show success message
     addNotification({
       type: "success",
       title: "Success",
@@ -253,7 +242,7 @@ const RoleDetail: React.FC = () => {
                 Role Details
               </h1>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                View and manage role information
+                View and manage role information and permissions
               </p>
             </div>
           </div>
@@ -310,152 +299,140 @@ const RoleDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="border-b border-gray-200 dark:border-gray-800">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab("details")}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "details"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-              }`}
-            >
-              <AdminPanelSettings className="w-4 h-4 mr-2 inline" />
-              Role Details
-            </button>
-            <button
-              onClick={() => setActiveTab("permissions")}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "permissions"
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
-              }`}
-            >
-              <Security className="w-4 h-4 mr-2 inline" />
-              Permissions
-            </button>
-          </nav>
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === "details" && (
-          <>
-            {/* Error Display */}
-            {editError && (
-              <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {editError}
-                </p>
-              </div>
-            )}
-
-            {/* Role Information Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Basic Information */}
-              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-                <div className="flex items-center mb-4">
-                  <AdminPanelSettings className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-2" />
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Role Information
-                  </h2>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Role Name
-                    </label>
-                    {isEditing ? (
-                      <Input
-                        value={editForm.name}
-                        onChange={(e) => handleInputChange(e.value ?? "")}
-                        placeholder="Enter role name"
-                        disabled={saving}
-                        style={{ width: "100%" }}
-                      />
-                    ) : (
-                      <p className="text-gray-900 dark:text-white font-medium">
-                        {role.name}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Normalized Name
-                    </label>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {isEditing
-                        ? editForm.name.toUpperCase()
-                        : role.normalizedName}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Role ID
-                    </label>
-                    <p className="text-gray-600 dark:text-gray-400 font-mono text-sm">
-                      {role.id}
-                    </p>
-                  </div>
-                  {role.concurrencyStamp && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Concurrency Stamp
-                      </label>
-                      <p className="text-gray-600 dark:text-gray-400 font-mono text-xs break-all">
-                        {role.concurrencyStamp}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Additional Information */}
-              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-                <div className="flex items-center mb-4">
-                  <AdminPanelSettings className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" />
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Role Statistics
-                  </h2>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Status
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                      Active
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Created
-                    </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {/* You can add creation date here if available in your API */}
-                      System Role
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Users Assigned
-                    </span>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {/* You can fetch user count with this role */}-
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+        {/* Error Display */}
+        {editError && (
+          <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {editError}
+            </p>
+          </div>
         )}
 
-        {activeTab === "permissions" && (
+        {/* Role Information Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Basic Information */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+            <div className="flex items-center mb-4">
+              <AdminPanelSettings className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-2" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Role Information
+              </h2>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Role Name
+                </label>
+                {isEditing ? (
+                  <Input
+                    value={editForm.name}
+                    onChange={(e) => handleInputChange(e.value ?? "")}
+                    placeholder="Enter role name"
+                    disabled={saving}
+                    style={{ width: "100%" }}
+                  />
+                ) : (
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {role.name}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Normalized Name
+                </label>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {isEditing
+                    ? editForm.name.toUpperCase()
+                    : role.normalizedName}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Role ID
+                </label>
+                <p className="text-gray-600 dark:text-gray-400 font-mono text-sm break-all">
+                  {role.id}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Role Statistics */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+            <div className="flex items-center mb-4">
+              <AdminPanelSettings className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Role Statistics
+              </h2>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Status
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                  Active
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Created
+                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  System Role
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Users Assigned
+                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  -
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Information */}
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
+            <div className="flex items-center mb-4">
+              <Security className="w-6 h-6 text-purple-600 dark:text-purple-400 mr-2" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Security Details
+              </h2>
+            </div>
+            <div className="space-y-4">
+              {role.concurrencyStamp && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Concurrency Stamp
+                  </label>
+                  <p className="text-gray-600 dark:text-gray-400 font-mono text-xs break-all">
+                    {role.concurrencyStamp}
+                  </p>
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Last Modified
+                </label>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  {/* You can add last modified date here if available */}
+                  Recently
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Permissions Section */}
+        <div className="mt-8">
           <PermissionAssignment
             roleName={role.name}
             onPermissionsUpdated={handlePermissionsUpdated}
           />
-        )}
+        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}

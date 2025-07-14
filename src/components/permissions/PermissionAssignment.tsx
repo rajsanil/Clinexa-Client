@@ -34,6 +34,9 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
   const [selectedCategory, setSelectedCategory] =
     useState<PermissionCategory | null>(null);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+  const [currentRolePermissions, setCurrentRolePermissions] = useState<
+    string[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +44,30 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
 
   useEffect(() => {
     fetchPermissions();
-  }, []);
+    fetchRolePermissions();
+  }, [roleName]);
+
+  const fetchRolePermissions = async () => {
+    try {
+      const response = await apiService.get(
+        `${API_SETTINGS.GET_ROLE_PERMISSIONS}${roleName}`
+      );
+
+      if (response.success && response.data) {
+        if (Array.isArray(response.data)) {
+          setCurrentRolePermissions(response.data);
+        } else if (response.data.permissions) {
+          setCurrentRolePermissions(response.data.permissions);
+        } else {
+          setCurrentRolePermissions(response.data);
+        }
+      } else {
+        console.warn("Failed to fetch role permissions:", response.error);
+      }
+    } catch (err) {
+      console.error("Error fetching role permissions:", err);
+    }
+  };
 
   const fetchPermissions = async () => {
     try {
@@ -51,8 +77,6 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
       const response = await apiService.get(API_SETTINGS.GET_ALL_PERMISSIONS);
 
       if (response.success && response.data) {
-        // Handle the response structure based on your API
-        // If the API returns the array directly
         if (Array.isArray(response.data)) {
           setCategories(response.data);
         } else if (response.data.categories) {
@@ -73,13 +97,20 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
 
   const handleCategoryChange = (event: any) => {
     const category = event.target.value;
-    // Don't set category if it's the default item (empty name)
     if (category && category.name) {
       setSelectedCategory(category);
+      const categoryPermissions =
+        category.screens?.flatMap((screen: Screen) =>
+          screen.permissions.map((p: Permission) => p.key)
+        ) || [];
+      const currentPermissionsInCategory = categoryPermissions.filter(
+        (key: string) => currentRolePermissions.includes(key)
+      );
+      setSelectedPermissions(currentPermissionsInCategory);
     } else {
       setSelectedCategory(null);
+      setSelectedPermissions([]);
     }
-    setSelectedPermissions([]);
   };
 
   const handlePermissionToggle = (permissionKey: string) => {
@@ -95,7 +126,6 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
   const handleSelectAll = () => {
     if (!selectedCategory || !selectedCategory.screens) return;
 
-    // Get all permissions from all screens in the category
     const allPermissions = selectedCategory.screens.flatMap((screen) =>
       screen.permissions.map((p: Permission) => p.key)
     );
@@ -105,12 +135,10 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
     );
 
     if (allSelected) {
-      // Deselect all
       setSelectedPermissions((prev) =>
         prev.filter((key) => !allPermissions.includes(key))
       );
     } else {
-      // Select all
       setSelectedPermissions((prev) => [
         ...prev.filter((key) => !allPermissions.includes(key)),
         ...allPermissions,
@@ -141,6 +169,8 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
         requestData
       );
 
+      console.log("response", response);
+
       if (response.success) {
         addNotification({
           type: "success",
@@ -148,11 +178,9 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
           content: "Permissions assigned successfully",
         });
 
-        // Reset selections
         setSelectedPermissions([]);
         setSelectedCategory(null);
 
-        // Notify parent component
         if (onPermissionsUpdated) {
           onPermissionsUpdated();
         }
@@ -213,6 +241,37 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
       </div>
 
       <div className="space-y-6">
+        {/* Current Permissions Summary */}
+        {currentRolePermissions.length > 0 && (
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center space-x-2 mb-2">
+              <Security className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Current Permissions for {roleName}
+              </h3>
+            </div>
+            <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+              This role currently has {currentRolePermissions.length}{" "}
+              permission(s) assigned.
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {currentRolePermissions.slice(0, 8).map((permKey) => (
+                <span
+                  key={permKey}
+                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                >
+                  {permKey}
+                </span>
+              ))}
+              {currentRolePermissions.length > 8 && (
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                  +{currentRolePermissions.length - 8} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Category Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -269,6 +328,8 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
                         const isSelected = selectedPermissions.includes(
                           permission.key
                         );
+                        const isCurrentlyAssigned =
+                          currentRolePermissions.includes(permission.key);
                         return (
                           <div
                             key={permission.key}
@@ -290,6 +351,11 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
                                 {permission.key}
                               </p>
                             </div>
+                            {isCurrentlyAssigned && !isSelected && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                Current
+                              </span>
+                            )}
                           </div>
                         );
                       })}
@@ -306,7 +372,6 @@ const PermissionAssignment: React.FC<PermissionAssignmentProps> = ({
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {selectedPermissions.slice(0, 5).map((permKey) => {
-                    // Find the permission label
                     const permission = selectedCategory.screens
                       .flatMap((s) => s.permissions)
                       .find((p) => p.key === permKey);
