@@ -18,7 +18,6 @@ import {
   Save,
   Close,
   Warning,
-  Security,
 } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import { Role } from "../../types/role.types";
@@ -187,11 +186,11 @@ const RoleDetail: React.FC = () => {
     return (
       <>
         <PageMeta
-          title="Role Details | Dashboard"
+          title="Role Details | Clinic ERP"
           description="View and manage role details"
         />
         <div className="flex items-center justify-center min-h-96">
-          <CircularProgress size={48} className="text-blue-600" />
+          <CircularProgress size={40} className="text-blue-600" />
         </div>
       </>
     );
@@ -201,20 +200,28 @@ const RoleDetail: React.FC = () => {
     return (
       <>
         <PageMeta
-          title="Role Details | Dashboard"
+          title="Role Details | Clinic ERP"
           description="View and manage role details"
         />
-        <div className="flex flex-col items-center justify-center min-h-96 text-center">
-          <div className="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
+        <div className="text-center py-12">
+          <div className="mb-6 p-4 rounded bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400">
               {error || "Role not found"}
             </p>
           </div>
           <div className="space-x-3">
-            <Button onClick={() => navigate("/roles")}>Back to Roles</Button>
-            <Button themeColor="primary" onClick={fetchRole}>
+            <button
+              onClick={() => navigate("/roles")}
+              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              Back to Roles
+            </button>
+            <button
+              onClick={fetchRole}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
               Try Again
-            </Button>
+            </button>
           </div>
         </div>
       </>
@@ -227,101 +234,106 @@ const RoleDetail: React.FC = () => {
         title={`${role.name} | Role Details`}
         description="View and manage role details"
       />
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate("/roles")}
-              className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-            >
-              <ArrowBack className="w-4 h-4 mr-2" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Role Details
-              </h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                View and manage role information and permissions
-              </p>
+
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => navigate("/roles")}
+                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <ArrowBack className="w-5 h-5" />
+                </button>
+                <div className="flex items-center space-x-3">
+                  <AdminPanelSettings className="w-8 h-8 text-blue-600" />
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      Role Details
+                    </h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {role.name}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                {!isEditing ? (
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      disabled={deleting}
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteDialog(true)}
+                      disabled={deleting}
+                      className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+                    >
+                      <Delete className="w-4 h-4 mr-2" />
+                      Delete
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleCancel}
+                      disabled={saving}
+                      className="inline-flex items-center px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+                    >
+                      <Close className="w-4 h-4 mr-2" />
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={saving || !editForm.name.trim()}
+                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {saving ? (
+                        <CircularProgress
+                          size={16}
+                          className="text-white mr-2"
+                        />
+                      ) : (
+                        <Save className="w-4 h-4 mr-2" />
+                      )}
+                      Save
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="mt-4 sm:mt-0 flex space-x-3">
-            {!isEditing ? (
-              <>
-                <Button
-                  onClick={handleEdit}
-                  themeColor="primary"
-                  disabled={deleting}
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Role
-                </Button>
-                <Button
-                  onClick={() => setShowDeleteDialog(true)}
-                  fillMode="outline"
-                  disabled={deleting}
-                  className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
-                >
-                  <Delete className="w-4 h-4 mr-2" />
-                  Delete Role
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  onClick={handleCancel}
-                  fillMode="outline"
-                  disabled={saving}
-                >
-                  <Close className="w-4 h-4 mr-2" />
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  themeColor="primary"
-                  disabled={saving || !editForm.name.trim()}
-                >
-                  {saving ? (
-                    <>
-                      <CircularProgress size={16} className="text-white mr-2" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
           </div>
         </div>
 
-        {/* Error Display */}
-        {editError && (
-          <div className="p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
-            <p className="text-sm text-red-600 dark:text-red-400">
-              {editError}
-            </p>
-          </div>
-        )}
+        <div className="px-6 py-6">
+          {/* Error Display */}
+          {editError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded dark:bg-red-900/20 dark:border-red-800">
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {editError}
+              </p>
+            </div>
+          )}
 
-        {/* Role Information Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Basic Information */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-            <div className="flex items-center mb-4">
-              <AdminPanelSettings className="w-6 h-6 text-blue-600 dark:text-blue-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {/* Role Information */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">
                 Role Information
               </h2>
             </div>
-            <div className="space-y-4">
+
+            <div className="p-6 space-y-6">
+              {/* Role Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Role Name
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Role Name:
                 </label>
                 {isEditing ? (
                   <Input
@@ -332,102 +344,37 @@ const RoleDetail: React.FC = () => {
                     style={{ width: "100%" }}
                   />
                 ) : (
-                  <p className="text-gray-900 dark:text-white font-medium">
+                  <p className="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
                     {role.name}
                   </p>
                 )}
               </div>
+
+              {/* Normalized Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Normalized Name
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Normalized Name:
                 </label>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600">
                   {isEditing
                     ? editForm.name.toUpperCase()
                     : role.normalizedName}
                 </p>
               </div>
+
+              {/* Role ID */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Role ID
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Role ID:
                 </label>
-                <p className="text-gray-600 dark:text-gray-400 font-mono text-sm break-all">
+                <p className="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md border border-gray-200 dark:border-gray-600 font-mono break-all">
                   {role.id}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Role Statistics */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-            <div className="flex items-center mb-4">
-              <AdminPanelSettings className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Role Statistics
-              </h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Status
-                </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                  Active
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Created
-                </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  System Role
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Users Assigned
-                </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  -
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Information */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6">
-            <div className="flex items-center mb-4">
-              <Security className="w-6 h-6 text-purple-600 dark:text-purple-400 mr-2" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Security Details
-              </h2>
-            </div>
-            <div className="space-y-4">
-              {role.concurrencyStamp && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Concurrency Stamp
-                  </label>
-                  <p className="text-gray-600 dark:text-gray-400 font-mono text-xs break-all">
-                    {role.concurrencyStamp}
-                  </p>
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Last Modified
-                </label>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  {/* You can add last modified date here if available */}
-                  Recently
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Permissions Section */}
-        <div className="mt-8">
+          {/* Permissions Section */}
           <PermissionAssignment
             roleName={role.name}
             onPermissionsUpdated={handlePermissionsUpdated}

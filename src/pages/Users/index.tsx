@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, GridColumn } from "@progress/kendo-react-grid";
+import { Grid, GridColumn, GridToolbar } from "@progress/kendo-react-grid";
 import { GridCellProps } from "@progress/kendo-react-grid";
 import PageMeta from "../../components/common/PageMeta";
 import { API_SETTINGS } from "../../utils/settings";
@@ -133,20 +133,10 @@ const Users: React.FC = () => {
     return (
       <td className={`${props.className || ""} p-3`}>
         <div className="flex items-center">
-          <div className="flex-shrink-0">
-            {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-sm">
-              <span className="text-white font-semibold text-sm">
-                {dataItem.userName.charAt(0).toUpperCase()}
-              </span>
-            </div> */}
-          </div>
           <div className="ml-3 min-w-0 flex-1">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
               {dataItem.userName}
             </p>
-            {/* <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              ID: {dataItem.id.substring(0, 8)}...
-            </p> */}
           </div>
         </div>
       </td>
@@ -157,11 +147,11 @@ const Users: React.FC = () => {
     return (
       <>
         <PageMeta
-          title="Users | Dashboard"
+          title="Users | Clinic ERP"
           description="Manage users in your dashboard"
         />
         <div className="flex items-center justify-center min-h-96">
-          <CircularProgress size={48} className="text-blue-600" />
+          <CircularProgress size={40} className="text-blue-600" />
         </div>
       </>
     );
@@ -171,16 +161,16 @@ const Users: React.FC = () => {
     return (
       <>
         <PageMeta
-          title="Users | Dashboard"
+          title="Users | Clinic ERP"
           description="Manage users in your dashboard"
         />
-        <div className="flex flex-col items-center justify-center min-h-96 text-center">
-          <div className="mb-4 p-4 rounded-lg bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
+        <div className="text-center py-12">
+          <div className="mb-6 p-4 rounded bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800">
             <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
           <button
             onClick={fetchUsers}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Try Again
           </button>
@@ -192,178 +182,125 @@ const Users: React.FC = () => {
   return (
     <>
       <PageMeta
-        title="Users | Dashboard"
+        title="Users | Clinic ERP"
         description="Manage users in your dashboard"
       />
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="flex items-center space-x-3">
+          <People className="w-8 h-8 text-blue-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
               Users
             </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Manage and view all users in the system
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Manage and view all users in the system ({users.length} total)
             </p>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button
-              onClick={fetchUsers}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <Refresh className="w-4 h-4 mr-2" />
-              Refresh
-            </button>
-          </div>
         </div>
 
-        {/* Users Count */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg dark:bg-blue-900/20">
-                <People className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <div className="py-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+            {users.length === 0 ? (
+              <div className="text-center py-12">
+                <People className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                  No users found
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  There are no users to display at the moment.
+                </p>
               </div>
-            </div>
-            <div className="ml-4">
-              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Total Users
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {users.length}
-              </div>
-            </div>
-          </div>
-        </div>
+            ) : (
+              <div className="w-full users-table-container">
+                <Grid
+                  data={users}
+                  className="custom-users-grid"
+                  pageable={{
+                    buttonCount: 5,
+                    info: true,
+                    type: "numeric",
+                    pageSizes: [10, 20, 50],
+                    previousNext: true,
+                  }}
+                  sortable={true}
+                  filterable={true}
+                  resizable={true}
+                  reorderable={true}
+                  style={{
+                    height: "600px",
+                  }}
+                >
+                  <GridToolbar>
+                    <button
+                      onClick={fetchUsers}
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <Refresh className="w-4 h-4 mr-2" />
+                      Refresh
+                    </button>
+                  </GridToolbar>
 
-        {/* Kendo Grid */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
-          {users.length === 0 ? (
-            <div className="text-center py-12">
-              <People className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                No users found
-              </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                There are no users to display at the moment.
-              </p>
-            </div>
-          ) : (
-            <div className="w-full users-table-container">
-              <Grid
-                data={users}
-                className="custom-users-grid"
-                pageable={{
-                  buttonCount: 5,
-                  info: true,
-                  type: "numeric",
-                  pageSizes: [10, 20, 50],
-                  previousNext: true,
-                }}
-                sortable={true}
-                filterable={true}
-                resizable={true}
-                reorderable={true}
-                style={{
-                  height: "600px",
-                  // width: "100%",
-                }}
-              >
-                <GridColumn
-                  field="userName"
-                  title="User"
-                  width="200px"
-                  minResizableWidth={150}
-                  cells={{ data: UserAvatarCell }}
-                  filterable={true}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold"
-                />
-                <GridColumn
-                  field="email"
-                  title="Email Address"
-                  width="240px"
-                  minResizableWidth={180}
-                  filterable={true}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold"
-                  filterTitle="Filter by email address"
-                />
-                <GridColumn
-                  field="phoneNumber"
-                  title="Phone Number"
-                  width="140px"
-                  minResizableWidth={120}
-                  filterable={true}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold"
-                  filterTitle="Filter by phone number"
-                />
-                {/* <GridColumn
-                  field="emailConfirmed"
-                  title="Email Status"
-                  width="120px"
-                  minResizableWidth={100}
-                  cells={{ data: StatusCell }}
-                  filterable={false}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold text-center"
-                  className="text-center"
-                /> */}
-                {/* <GridColumn
-                  field="phoneNumberConfirmed"
-                  title="Phone Status"
-                  width="120px"
-                  minResizableWidth={100}
-                  cells={{ data: StatusCell }}
-                  filterable={false}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold text-center"
-                  className="text-center"
-                /> */}
-                {/* <GridColumn
-                  field="twoFactorEnabled"
-                  title="2FA Status"
-                  width="110px"
-                  minResizableWidth={90}
-                  cells={{ data: StatusCell }}
-                  filterable={false}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold text-center"
-                  className="text-center"
-                /> */}
-                <GridColumn
-                  field="lockoutEnd"
-                  title="Account Status"
-                  width="130px"
-                  minResizableWidth={100}
-                  cells={{ data: LockoutCell }}
-                  filterable={false}
-                  sortable={true}
-                  reorderable={true}
-                  headerClassName="font-semibold text-center"
-                  className="text-center"
-                />
-                <GridColumn
-                  title="Actions"
-                  width="100px"
-                  minResizableWidth={80}
-                  cells={{ data: ActionsCell }}
-                  filterable={false}
-                  sortable={false}
-                  reorderable={false}
-                  headerClassName="font-semibold text-center"
-                  className="text-center"
-                />
-              </Grid>
-            </div>
-          )}
+                  <GridColumn
+                    field="userName"
+                    title="User"
+                    width="200px"
+                    minResizableWidth={150}
+                    cells={{ data: UserAvatarCell }}
+                    filterable={true}
+                    sortable={true}
+                    reorderable={true}
+                    headerClassName="font-semibold"
+                  />
+                  <GridColumn
+                    field="email"
+                    title="Email Address"
+                    width="240px"
+                    minResizableWidth={180}
+                    filterable={true}
+                    sortable={true}
+                    reorderable={true}
+                    headerClassName="font-semibold"
+                    filterTitle="Filter by email address"
+                  />
+                  <GridColumn
+                    field="phoneNumber"
+                    title="Phone Number"
+                    width="140px"
+                    minResizableWidth={120}
+                    filterable={true}
+                    sortable={true}
+                    reorderable={true}
+                    headerClassName="font-semibold"
+                    filterTitle="Filter by phone number"
+                  />
+                  <GridColumn
+                    field="lockoutEnd"
+                    title="Account Status"
+                    width="130px"
+                    minResizableWidth={100}
+                    cells={{ data: LockoutCell }}
+                    filterable={false}
+                    sortable={true}
+                    reorderable={true}
+                    headerClassName="font-semibold text-center"
+                    className="text-center"
+                  />
+                  <GridColumn
+                    title="Actions"
+                    width="100px"
+                    minResizableWidth={80}
+                    cells={{ data: ActionsCell }}
+                    filterable={false}
+                    sortable={false}
+                    reorderable={false}
+                    headerClassName="font-semibold text-center"
+                    className="text-center"
+                  />
+                </Grid>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

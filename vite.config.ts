@@ -14,7 +14,7 @@ export default defineConfig({
       },
     }),
   ],
-  base: "/Clinexa-Client",
+  base: "/Clinexa-Client/",
   build: {
     chunkSizeWarningLimit: 1000,
     rollupOptions: {

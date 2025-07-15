@@ -20,7 +20,7 @@ const LayoutContent: React.FC = () => {
       >
         <AppHeader />
         <div className="flex-1 overflow-auto">
-          <div className="p-4 mx-auto max-w-7xl md:p-6 w-full">
+          <div className="p-4 mx-auto w-full">
             <Outlet />
           </div>
         </div>
