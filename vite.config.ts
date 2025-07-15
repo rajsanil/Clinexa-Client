@@ -9,20 +9,17 @@ export default defineConfig({
     svgr({
       svgrOptions: {
         icon: true,
-        // This will transform your SVG to a React component
         exportType: "named",
         namedExport: "ReactComponent",
       },
     }),
   ],
+  base: "/Clinexa-Client",
   build: {
-    // Increase chunk size limit to reduce number of chunks
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
-      // Reduce concurrent file processing
       maxParallelFileOps: 2,
       output: {
-        // Split vendor chunks to reduce file processing load
         manualChunks: {
           vendor: ["react", "react-dom"],
           mui: ["@mui/material", "@mui/icons-material"],
@@ -34,13 +31,11 @@ export default defineConfig({
       },
     },
   },
-  // Optimize development server
   server: {
     fs: {
       strict: false,
     },
   },
-  // Add this to help with file watching limits
   optimizeDeps: {
     exclude: ["@progress/kendo-licensing"],
   },
