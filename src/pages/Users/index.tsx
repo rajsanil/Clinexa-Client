@@ -1,31 +1,81 @@
 import React, { useState, useEffect } from "react";
-import { Grid, GridColumn, GridToolbar } from "@progress/kendo-react-grid";
+import { Grid, GridColumn } from "@progress/kendo-react-grid";
 import { GridCellProps } from "@progress/kendo-react-grid";
 import PageMeta from "../../components/common/PageMeta";
 import { API_SETTINGS } from "../../utils/settings";
 import { User, UsersResponse } from "../../types/user.types";
 import { apiService } from "../../utils/apiRequest";
+import { useActionBar } from "../../context/ActionBarContext";
 import {
   CheckCircle,
   Cancel,
   Lock,
   LockOpen,
   Visibility,
-  Refresh,
-  People,
 } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router";
+import { Button } from "@progress/kendo-react-buttons";
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { setConfig } = useActionBar();
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Configure action bar when component mounts
+  useEffect(() => {
+    setConfig({
+      title: "Users",
+      subtitle: `Manage and view all users in the system (${users.length} total)`,
+      showSearch: true,
+      searchPlaceholder: "Search users by name, email...",
+      onSearch: (query: string) => {
+        setSearchQuery(query);
+        // Here you could implement actual search filtering
+      },
+      actions: [
+        {
+          id: "refresh",
+          type: "refresh",
+          label: "Refresh",
+          onClick: fetchUsers,
+          loading: loading,
+        },
+        {
+          id: "add-user",
+          type: "add",
+          label: "Add User",
+          onClick: () => {
+            // Navigate to add user page when it exists
+            console.log("Add user functionality to be implemented");
+          },
+          variant: "primary",
+        },
+        {
+          id: "export",
+          type: "export",
+          label: "Export",
+          onClick: () => {
+            // Implement export functionality
+            console.log("Export users functionality to be implemented");
+          },
+          variant: "secondary",
+        },
+      ],
+    });
+
+    // Cleanup when component unmounts
+    return () => {
+      setConfig(null);
+    };
+  }, [setConfig, users.length, loading]);
 
   const fetchUsers = async () => {
     try {
@@ -114,14 +164,15 @@ const Users: React.FC = () => {
     return (
       <td className={`${props.className || ""} p-3 w-full`}>
         <div className="flex items-center justify-center w-full">
-          <button
-            className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+          <Button
+            size="small"
+            fillMode="flat"
             onClick={handleViewUser}
             title="View user details"
           >
             <Visibility className="w-3 h-3 mr-1" />
             View
-          </button>
+          </Button>
         </div>
       </td>
     );
@@ -186,121 +237,99 @@ const Users: React.FC = () => {
         description="Manage users in your dashboard"
       />
 
-      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-        <div className="flex items-center space-x-3">
-          <People className="w-8 h-8 text-blue-600" />
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Users
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Manage and view all users in the system ({users.length} total)
-            </p>
-          </div>
-        </div>
-
-        <div className="py-4">
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-            {users.length === 0 ? (
-              <div className="text-center py-12">
-                <People className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                  No users found
-                </h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  There are no users to display at the moment.
-                </p>
+      <div className="bg-gray-50 dark:bg-gray-900 h-full">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden h-full">
+          {users.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                <span className="text-gray-400 text-xl">👥</span>
               </div>
-            ) : (
-              <div className="w-full users-table-container">
-                <Grid
-                  data={users}
-                  className="custom-users-grid"
-                  pageable={{
-                    buttonCount: 5,
-                    info: true,
-                    type: "numeric",
-                    pageSizes: [10, 20, 50],
-                    previousNext: true,
-                  }}
-                  sortable={true}
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                No users found
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                There are no users to display at the moment.
+              </p>
+            </div>
+          ) : (
+            <div className="w-full h-full users-table-container">
+              <Grid
+                data={users}
+                className="custom-users-grid"
+                pageable={{
+                  buttonCount: 5,
+                  info: true,
+                  type: "numeric",
+                  pageSizes: [10, 20, 50],
+                  previousNext: true,
+                }}
+                sortable={true}
+                filterable={true}
+                resizable={true}
+                reorderable={true}
+                style={{
+                  height: "100%",
+                }}
+              >
+                <GridColumn
+                  field="userName"
+                  title="User"
+                  width="200px"
+                  minResizableWidth={150}
+                  cells={{ data: UserAvatarCell }}
                   filterable={true}
-                  resizable={true}
+                  sortable={true}
                   reorderable={true}
-                  style={{
-                    height: "600px",
-                  }}
-                >
-                  <GridToolbar>
-                    <button
-                      onClick={fetchUsers}
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <Refresh className="w-4 h-4 mr-2" />
-                      Refresh
-                    </button>
-                  </GridToolbar>
-
-                  <GridColumn
-                    field="userName"
-                    title="User"
-                    width="200px"
-                    minResizableWidth={150}
-                    cells={{ data: UserAvatarCell }}
-                    filterable={true}
-                    sortable={true}
-                    reorderable={true}
-                    headerClassName="font-semibold"
-                  />
-                  <GridColumn
-                    field="email"
-                    title="Email Address"
-                    width="240px"
-                    minResizableWidth={180}
-                    filterable={true}
-                    sortable={true}
-                    reorderable={true}
-                    headerClassName="font-semibold"
-                    filterTitle="Filter by email address"
-                  />
-                  <GridColumn
-                    field="phoneNumber"
-                    title="Phone Number"
-                    width="140px"
-                    minResizableWidth={120}
-                    filterable={true}
-                    sortable={true}
-                    reorderable={true}
-                    headerClassName="font-semibold"
-                    filterTitle="Filter by phone number"
-                  />
-                  <GridColumn
-                    field="lockoutEnd"
-                    title="Account Status"
-                    width="130px"
-                    minResizableWidth={100}
-                    cells={{ data: LockoutCell }}
-                    filterable={false}
-                    sortable={true}
-                    reorderable={true}
-                    headerClassName="font-semibold text-center"
-                    className="text-center"
-                  />
-                  <GridColumn
-                    title="Actions"
-                    width="100px"
-                    minResizableWidth={80}
-                    cells={{ data: ActionsCell }}
-                    filterable={false}
-                    sortable={false}
-                    reorderable={false}
-                    headerClassName="font-semibold text-center"
-                    className="text-center"
-                  />
-                </Grid>
-              </div>
-            )}
-          </div>
+                  headerClassName="font-semibold"
+                />
+                <GridColumn
+                  field="email"
+                  title="Email Address"
+                  width="240px"
+                  minResizableWidth={180}
+                  filterable={true}
+                  sortable={true}
+                  reorderable={true}
+                  headerClassName="font-semibold"
+                  filterTitle="Filter by email address"
+                />
+                <GridColumn
+                  field="phoneNumber"
+                  title="Phone Number"
+                  width="140px"
+                  minResizableWidth={120}
+                  filterable={true}
+                  sortable={true}
+                  reorderable={true}
+                  headerClassName="font-semibold"
+                  filterTitle="Filter by phone number"
+                />
+                <GridColumn
+                  field="lockoutEnd"
+                  title="Account Status"
+                  width="130px"
+                  minResizableWidth={100}
+                  cells={{ data: LockoutCell }}
+                  filterable={false}
+                  sortable={true}
+                  reorderable={true}
+                  headerClassName="font-semibold text-center"
+                  className="text-center"
+                />
+                <GridColumn
+                  title="Actions"
+                  width="100px"
+                  minResizableWidth={80}
+                  cells={{ data: ActionsCell }}
+                  filterable={false}
+                  sortable={false}
+                  reorderable={false}
+                  headerClassName="font-semibold text-center"
+                  className="text-center"
+                />
+              </Grid>
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -1,6 +1,7 @@
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
+import { ActionBarProvider } from "../context/ActionBarContext";
 import { Outlet } from "react-router";
-import AppHeader from "./AppHeader";
+import ActionBar from "./ActionBar";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
 
@@ -18,9 +19,9 @@ const LayoutContent: React.FC = () => {
           isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
-        <AppHeader />
+        <ActionBar />
         <div className="flex-1 overflow-auto">
-          <div className="p-4 mx-auto w-full">
+          <div className="p-4 mx-auto w-full h-full">
             <Outlet />
           </div>
         </div>
@@ -32,7 +33,9 @@ const LayoutContent: React.FC = () => {
 const AppLayout: React.FC = () => {
   return (
     <SidebarProvider>
-      <LayoutContent />
+      <ActionBarProvider>
+        <LayoutContent />
+      </ActionBarProvider>
     </SidebarProvider>
   );
 };
